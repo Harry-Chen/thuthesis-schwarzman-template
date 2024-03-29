@@ -1,0 +1,80 @@
+% !TeX encoding = UTF-8
+% !TeX program = xelatex
+% !TeX spellcheck = en_US
+
+\documentclass[degree=master,language=english]{thuthesis}
+
+% include template setup
+\input{thusetup}
+
+\begin{document}
+
+% 封面 / Title page
+\maketitle
+
+% 学位论文指导小组、公开评阅人和答辩委员会名单
+% Capstone / Thesis Supervision Committee, Reviewers, and Defense Committee
+\input{data/committee}
+
+% 使用授权的说明 / authorization for use
+\copyrightpage
+
+% comment out this line for personal capstone report
+\input{data/capstone}
+
+\frontmatter
+
+\input{data/abstract}
+
+% 目录 / table of contents (auto generated)
+\tableofcontents
+
+% 插图和附表清单 / list of figures and tables (optional, auto generated)
+\listoffiguresandtables
+
+% 符号对照表 / list of symbols and acronyms (optional)
+\input{data/denotation}
+
+% 正文部分 / main matter
+\mainmatter
+
+% include content from data/ folder
+
+\input{data/chap01}
+
+\input{data/chap02}
+
+\input{data/chap03}
+
+\input{data/chap04}
+
+% add more files ...
+% \input{data/chap05}
+
+% 其他部分 / back matter
+\backmatter
+
+% 参考文献 / references (auto generated from citations in text)
+\bibliography{ref/refs}
+
+% 附录 / appendices
+\appendix
+
+\input{data/appendix}
+
+% 致谢 / acknowledges
+\input{data/acknowledgements}
+
+% 声明 / statements
+\statement
+
+% 个人简历、在学期间完成的相关学术成果 / resume
+\input{data/resume}
+
+% 指导教师/指导小组学术评语 / comments from thesis supervisor
+\input{data/comments}
+
+% 答辩委员会决议书 / resolution of thesis defense committee
+\input{data/resolution}
+
+\end{document}

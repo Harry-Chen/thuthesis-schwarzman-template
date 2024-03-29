@@ -1,0 +1,49 @@
+% DO NOT MODIFY THIS FILE!
+% DO NOT MODIFY THIS FILE!
+% DO NOT MODIFY THIS FILE!
+
+\ProvidesPackage{schwarzman-extra}[2022/09/29 v0.01 LaTeX package for extra styles of Schwarzman College for thuthesis]
+
+
+% for capstone page
+\newcommand{\schcapstone}[1]{%
+\thu@chapter*[]{About Schwarzman College \\[1em] Group Capstone}
+\thispagestyle{empty}
+
+The Group Capstone Project is an important part of the Schwarzman College curriculum.
+It is a client-based analytical project that serves as a culminating academic and
+intellectual experience for students of Schwarzman Scholars Program.
+A team of 3-5 students is voluntarily formed under the guidance of a faculty advisor to conduct in-depth research,
+develop solutions and compose final reports on a topic proposed by a public, private or social partner organization.
+
+\vspace{2em}
+
+The Group Capstone project aims to train students to take advantage of team members’ diverse cultural and academic backgrounds,
+encourage broader understanding, exercise leadership and propose practical and innovative research solutions to real-world
+challenges. It is a comprehensive learning experience which allows students to interact with the partner organization,
+and to learn in a cross-cultural and cross-disciplinary team.
+With the extraordinary diversity and talents assembled at Schwarzman,
+the college collaborate with partner organizations to inspire students
+to develop solutions and to make a positive impact to the world.
+
+\vspace{2em}
+
+This group Capstone report topic is proposed by #1.
+}
+
+
+% for members page
+\newenvironment{schmembers}{%
+\thu@chapter*[]{Group Members and Responsibilities}
+\thispagestyle{empty}
+}{%
+}
+
+
+% for tables
+
+\RequirePackage{array}
+
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
