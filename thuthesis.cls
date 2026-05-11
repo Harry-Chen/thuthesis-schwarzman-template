@@ -8,7 +8,7 @@
 %% 
 %% This is a generated file.
 %% 
-%% Copyright (C) 2005-2025 by Tsinghua University TUNA Association <tuna@tsinghua.edu.cn>
+%% Copyright (C) 2005-2026 by Tsinghua University TUNA Association <tuna@tsinghua.edu.cn>
 %% 
 %% This work may be distributed and/or modified under the
 %% conditions of the LaTeX Project Public License, either version 1.3c
@@ -23,7 +23,7 @@
 %% 
 \NeedsTeXFormat{LaTeX2e}[2017/04/15]
 \ProvidesClass{thuthesis}
-[2024/07/01 7.5.2 Tsinghua University Thesis Template]
+[2026/05/10 7.7.0 Tsinghua University Thesis Template]
 \newcommand\thu@error[1]{%
   \ClassError{thuthesis}{#1}{}%
 }
@@ -45,6 +45,15 @@
     \fi
   }%
 }
+\newcommand\thu@replace@with@error[1]{%
+  \expandafter\def\csname #1\endcsname{%
+    \thu@error{%
+      \expandafter\protect\csname #1\endcsname\space can only be used once.
+      \MessageBreak
+      Please remove the duplicate call%
+    }%
+  }%
+}
 \@ifl@t@r\fmtversion{2017/04/15}{}{
   \thu@error{%
     TeX Live 2017 or later version is required to compile this document%
@@ -61,7 +70,7 @@
 }
 \hyphenation{Thu-Thesis}
 \def\thuthesis{ThuThesis}
-\def\version{7.5.2}
+\def\version{7.7.0}
 \RequirePackage{kvdefinekeys}
 \RequirePackage{kvsetkeys}
 \RequirePackage{kvoptions}
@@ -303,6 +312,49 @@
       half,
     }
   },
+  style-override = {
+    name    = style@override,
+    choices = {
+      none,
+      schwarzman,
+    },
+  },
+  footnote-numbering = {
+    name    = footnote@numbering,
+    choices = {
+      page,
+      chapter,
+      global,
+    },
+  },
+  footnote-style = {
+    name    = footnote@style,
+    choices = {
+      circled,
+      plain,
+    },
+  },
+  figure-numbering = {
+    name    = figure@numbering,
+    choices = {
+      chapter,
+      global,
+    },
+  },
+  table-numbering = {
+    name    = table@numbering,
+    choices = {
+      chapter,
+      global,
+    },
+  },
+  equation-numbering = {
+    name    = equation@numbering,
+    choices = {
+      chapter,
+      global,
+    },
+  },
 }
 \newif\ifthu@degree@graduate
 \newcommand\thu@set@graduate{%
@@ -329,6 +381,24 @@
   \PassOptionsToClass{openany}{book}
 \fi
 \PassOptionsToPackage{no-math}{fontspec}
+\ifthu@style@override@schwarzman
+  \thusetup{
+    footnote-numbering = global,
+    footnote-style     = plain,
+    figure-numbering   = global,
+    table-numbering    = global,
+    equation-numbering = global,
+  }
+\fi
+\thu@option@hook{style-override}{\thu@error{%
+  The 'style-override' option is only valid in class options.%
+}}%
+\thu@option@hook{footnote-numbering}{\thu@error{%
+  The 'footnote-numbering' option is only valid in class options.%
+}}%
+\ifthu@footnote@numbering@page
+  \PassOptionsToPackage{perpage}{footmisc}%
+\fi
 \LoadClass[a4paper,UTF8,zihao=-4,scheme=plain,fontset=none]{ctexbook}[2017/04/01]
 \RequirePackage{etoolbox}
 \RequirePackage{filehook}
@@ -352,10 +422,10 @@
 \RequirePackage[shortlabels]{enumitem}
 \RequirePackage{environ}
 \ifthu@raggedbottom
-  \RequirePackage[bottom,perpage,hang]{footmisc}
+  \RequirePackage[bottom,hang]{footmisc}
   \raggedbottom
 \else
-  \RequirePackage[perpage,hang]{footmisc}
+  \RequirePackage[hang]{footmisc}
 \fi
 \ifXeTeX
   \RequirePackage{xeCJKfntef}
@@ -572,17 +642,11 @@
 \thu@set@names
 \thu@option@hook{language}{\thu@set@names}
 \ifLuaTeX
-  % ctex 将带圈数字 U+2460–U+24FF 归入字符范围 3（ALchar），这里改回范围 6（JAchar）
-  \ltjdefcharrange{3}{%
-    "2000-"243F, "2500-"27BF, "2900-"29FF, "2B00-"2BFF}
-  \ltjdefcharrange{6}{%
-    "2460-"24FF, "2E80-"2EFF, "3000-"30FF, "3190-"319F, "31F0-"4DBF,
-    "4E00-"9FFF, "F900-"FAFF, "FE10-"FE1F, "FE30-"FE6F, "FF00-"FFEF,
-    "1B000-"1B16F, "1F100-"1F2FF, "20000-"3FFFF, "E0100-"E01EF}
+  % ctex 将带圈数字 U+2460–U+2473 归入字符范围 3（ALchar），这里改回范围 6（JAchar）
+  \ltjdefcharrange{6}{"2460-"2473, "2605}
 \else
   \ifXeTeX
-    \xeCJKDeclareCharClass{CJK}{"2460 -> "2473}
-    \xeCJKDeclareCharClass{CJK}{"2605}
+    \xeCJKDeclareCharClass{CJK}{"2460 -> "2473, "2605}
   \fi
 \fi
 \newcommand\thu@set@punctuations{%
@@ -1399,7 +1463,7 @@
   \ifthu@integral@upright
     \PassOptionsToPackage{upint}{newtxmath}%
   \fi
-  \RequirePackage{newtxmath}
+  \RequirePackage{newtxmath}%
   \let\thu@save@leq\leq
   \let\thu@save@geq\geq
   \ifthu@leq@slanted
@@ -1583,6 +1647,9 @@
               \itemsep   \z@skip}
 \setlist{nosep}
 \interfootnotelinepenalty=10000
+\ifthu@footnote@numbering@global
+  \@removefromreset{footnote}{chapter}%
+\fi
 \newcommand\thu@circled[1]{%
   \ifnum#1 >10\relax
     \thu@warning{%
@@ -1592,8 +1659,13 @@
   \fi
   {\symbol{\the\numexpr#1+"245F\relax}}%
 }
-\renewcommand{\thefootnote}{\thu@circled{\c@footnote}}
-\renewcommand{\thempfootnote}{\thu@circled{\c@mpfootnote}}
+\ifthu@footnote@style@circled
+  \renewcommand{\thefootnote}{\thu@circled{\c@footnote}}%
+  \renewcommand{\thempfootnote}{\thu@circled{\c@mpfootnote}}%
+\else
+  \renewcommand{\thefootnote}{\arabic{footnote}}%
+  \renewcommand{\thempfootnote}{\arabic{mpfootnote}}%
+\fi
 \def\footnoterule{\vskip-3\p@\hrule\@width0.3\textwidth\@height0.4\p@\vskip2.6\p@}
 \footnotemargin=13.5bp
 \long\def\@makefntext#1{%
@@ -1642,34 +1714,33 @@
   \endgroup
 }
 \allowdisplaybreaks[4]
-\newcommand\thu@eqn@left@paren{（}
-\newcommand\thu@eqn@right@paren{）}
-\newcommand\thu@set@eqn@paren@style{%
-  \ifthu@eqn@paren@style@full
-    \renewcommand\thu@eqn@left@paren{（}%
-    \renewcommand\thu@eqn@right@paren{）}%
-  \else
-    \renewcommand\thu@eqn@left@paren{(}%
-    \renewcommand\thu@eqn@right@paren{)}%
-  \fi
-}
-\thu@set@eqn@paren@style
-\thu@option@hook{eqn-paren-style}{\thu@set@eqn@paren@style}
 \newcommand\thu@put@parentheses[1]{%
   \ifthu@language@chinese
-    \unskip
-    \thu@eqn@left@paren#1\thu@eqn@right@paren
+    \ifthu@eqn@paren@style@full
+      \kern 0pt\relax
+      （#1）%
+    \else
+      (#1)%
+    \fi
   \else
     (#1)%
   \fi
 }
-\def\tagform@#1{\maketag@@@{\thu@put@parentheses{\ignorespaces#1\unskip\@@italiccorr}}}
-\renewcommand{\eqref}[1]{%
-  \textup{%
-    \normalfont\thu@put@parentheses{%
-      \ignorespaces\ref{#1}\unskip\@@italiccorr
-    }%
-  }%
+\def\tagform@#1{%
+  \maketag@@@{\thu@put@parentheses{\ignorespaces#1\unskip\@@italiccorr}}%
+}
+\DeclareRobustCommand{\eqref}[1]{%
+  \ifthu@language@chinese
+    \ifthu@eqn@paren@style@full
+      \unskip
+    \fi
+  \fi
+  \textup{\tagform@{\ref{#1}}}%
+  \ifthu@language@chinese
+    \ifthu@eqn@paren@style@full
+      \ignorespaces
+    \fi
+  \fi
 }
 \def\fps@figure{htbp}
 \def\fps@table{htbp}
@@ -1727,24 +1798,57 @@
     default = {.},
   },
 }
+\newcommand\thu@set@figure@numbering{%
+  \ifthu@figure@numbering@chapter
+    \@addtoreset{figure}{chapter}%
+  \else
+    \@removefromreset{figure}{chapter}%
+  \fi
+}
+\thu@set@figure@numbering
+\thu@option@hook{figure-numbering}{\thu@set@figure@numbering}
 \renewcommand\thefigure{%
-  \ifnum\c@chapter>\z@
-    \thechapter
-    \thu@figure@number@separator
+  \ifthu@figure@numbering@chapter
+    \ifnum\c@chapter>\z@
+      \thechapter
+      \thu@figure@number@separator
+    \fi
   \fi
   \@arabic\c@figure
 }
+\newcommand\thu@set@table@numbering{%
+  \ifthu@table@numbering@chapter
+    \@addtoreset{table}{chapter}%
+  \else
+    \@removefromreset{table}{chapter}%
+  \fi
+}
+\thu@set@table@numbering
+\thu@option@hook{table-numbering}{\thu@set@table@numbering}
 \renewcommand\thetable{%
-  \ifnum\c@chapter>\z@
-    \thechapter
-    \thu@table@number@separator
+  \ifthu@table@numbering@chapter
+    \ifnum\c@chapter>\z@
+      \thechapter
+      \thu@table@number@separator
+    \fi
   \fi
   \@arabic\c@table
 }
+\newcommand\thu@set@equation@numbering{%
+  \ifthu@equation@numbering@chapter
+    \@addtoreset{equation}{chapter}%
+  \else
+    \@removefromreset{equation}{chapter}%
+  \fi
+}
+\thu@set@equation@numbering
+\thu@option@hook{equation-numbering}{\thu@set@equation@numbering}
 \renewcommand\theequation{%
-  \ifnum\c@chapter>\z@
-    \thechapter
-    \thu@equation@number@separator
+  \ifthu@equation@numbering@chapter
+    \ifnum\c@chapter>\z@
+      \thechapter
+      \thu@equation@number@separator
+    \fi
   \fi
   \@arabic\c@equation
 }
@@ -2176,14 +2280,14 @@
 }
 \thu@option@hook{discipline}{%
   \ifthu@degree@type@professional
-    \thu@warning{`discipline' for professional degree is deprecated. Use `professional-field' instead.}
+    \thu@warning{`discipline' for professional degree is deprecated. Use `professional-field' instead.}%
     \let\thu@professional@field\thu@discipline
     \let\thu@discipline\@empty
   \fi
 }
 \thu@option@hook{discipline*}{%
   \ifthu@degree@type@professional
-    \thu@warning{`discipline*' for professional degree is deprecated. Use `professional-field*' instead.}
+    \thu@warning{`discipline*' for professional degree is deprecated. Use `professional-field*' instead.}%
     \let\thu@professional@field@en\thu@discipline@en
     \let\thu@discipline@en\@empty
   \fi
@@ -2516,9 +2620,9 @@
     \vskip 3bp%
     in\par
     \vskip 3.5bp%
-    {\bfseries\sffamily\thu@discipline@en\par}
+    {\bfseries\sffamily\thu@discipline@en\par}%
     \vfill
-    {\sffamily by\par}
+    {\sffamily by\par}%
     \vskip 0.24cm%
     {\sffamily\bfseries\thu@author@en\par}%
     \vskip 0.18cm%
@@ -2541,7 +2645,7 @@
     \sanhao[1.725]%
     \thu@titlepage@en@degree
     \vfill
-    {\sffamily by\par}
+    {\sffamily by\par}%
     \vskip 0.24cm%
     {\sffamily\bfseries\thu@author@en\par}%
     \ifx\thu@professional@field@en\empty
@@ -2603,6 +2707,8 @@
     \thu@format@date{\thu@date@en@short}{\thu@date}\par
   \endgroup
 }
+\newlength\thu@info@label@width
+\newlength\thu@info@label@text@width
 \newcommand\thu@titlepage@bachelor{%
   \newgeometry{
     top    = 3.8cm,
@@ -2659,7 +2765,14 @@
       \hspace{1.5em}%
       \thu@stretch{2.5em}{##2}%
     }%
-    \thu@titlepage@info@tabular{81bp}{2.5cm}{4em}{0.82cm}{%
+    \ifx\thu@co@supervisor\@empty
+      \setlength\thu@info@label@width{2.5cm}%
+      \setlength\thu@info@label@text@width{4em}%
+    \else
+      \setlength\thu@info@label@width{86bp}%
+      \setlength\thu@info@label@text@width{5em}%
+    \fi
+    \thu@titlepage@info@tabular{81bp}{\thu@info@label@width}{\thu@info@label@text@width}{0.82cm}{%
       \thu@info@item{系别}{}{\thu@department}%
       \thu@info@item{专业}{}{\thu@discipline}%
       \thu@info@item{姓名}{\thu@name@title}{\thu@author}%
@@ -2709,7 +2822,7 @@
       工作完成日期\quad
       \thu@uline[5.9cm]{%
         \thu@format@date{\thu@date@zh@digit@short}{\thu@start@date}—%
-        \thu@format@date{\thu@date@zh@digit@short}{\thu@end@date}
+        \thu@format@date{\thu@date@zh@digit@short}{\thu@end@date}%
       }\par
       \vskip 0.55cm%
       报告提交日期\quad
@@ -2798,7 +2911,7 @@
 \newcommand\copyrightpage[1][]{%
   \ifthu@degree@postdoc\relax\else
     \cleardoublepage
-    \def\thu@@tmp{#1}
+    \def\thu@@tmp{#1}%
     \ifx\thu@@tmp\@empty
       \thusetup{language=chinese}%
       \ifthu@degree@bachelor
@@ -2823,6 +2936,7 @@
       \kvsetkeys{thu@copyright}{#1}%
     \fi
   \fi
+  \thu@replace@with@error{copyrightpage}
 }
 \newcommand{\thu@authorization@frontdate}{%
   日\ifthu@degree@bachelor\hspace{1em}\else\hspace{2em}\fi 期：}
@@ -3017,11 +3131,10 @@
   statement-page-style = {
     name = statement@page@style,
     choices = {
-      auto,
-      empty,
       plain,
+      empty,
     },
-    default = auto,
+    default = plain,
   }
 }
 \newcommand\statement[1][]{%
@@ -3038,13 +3151,6 @@
     \fi
   }%
   \kvsetkeys{thu@statement}{#1}%
-  \ifthu@statement@page@style@auto
-    \ifx\thu@statement@file\@empty
-      \thusetup{statement-page-style = empty}%
-    \else
-      \thusetup{statement-page-style = plain}%
-    \fi
-  \fi
   \ifx\thu@statement@file\@empty
     \thusetup{language=chinese}%
     \begingroup
@@ -3059,14 +3165,17 @@
     \endgroup
     \thispagestyle{\thu@statement@page@style}%
     \ifthu@degree@graduate
-      \vspace{12bp}%
+      \vspace{13bp}%
       \fontsize{12bp}{21bp}\selectfont
-      \thu@statement@text@graduate\par
-      \vspace{79bp}%
       \begingroup
-        \noindent\hspace{5.4cm}\fontsize{13bp}{18bp}\selectfont
-        \thu@signature\thu@underline[2.8cm]{}\hspace{-6bp}%
-        \thu@backdate\thu@underline[2.3cm]{}\par
+        \renewcommand\CJKglue{\hspace{.15bp plus .1bp}}%
+        \thu@statement@text@graduate\par
+      \endgroup
+      \vspace{78.5bp}%
+      \begingroup
+        \noindent\hspace{153.5bp}\fontsize{13bp}{18bp}\selectfont
+        \thu@signature\thu@underline[76bp]{}\hspace{-3bp}%
+        \thu@backdate\thu@underline[65bp]{}\par
       \endgroup
     \else
       \ifthu@degree@bachelor
@@ -3088,6 +3197,7 @@
       \thispagestyle{\thu@statement@page@style}%
     }]{\thu@statement@file}%
   \fi
+  \thu@replace@with@error{statement}
 }
 \let\acknowledgement\acknowledgements
 \let\endacknowledgement\endacknowledgements
@@ -3166,6 +3276,7 @@
     }
   }
 }
+\newcommand\thu@bib@heading[1]{\thu@chapter*{#1}}
 \def\bibliographystyle#1{%
   \gdef\bu@bibstyle{#1}%
   \ifx\@begindocumenthook\@undefined\else
@@ -3276,7 +3387,15 @@
               % \else
               %   \def@NAT@last@yr{--\NAT@penalty}%
               % \fi
-              \def@NAT@last@yr{-\NAT@penalty}%
+              \ifthu@degree@bachelor
+                \ifx\NAT@last@yr\relax
+                  \def@NAT@last@yr{\@citea}%
+                \else
+                  \def@NAT@last@yr{-\NAT@penalty}%
+                \fi
+              \else
+                \def@NAT@last@yr{-\NAT@penalty}%
+              \fi
             }{%
               \NAT@last@yr@mbox
             }%
@@ -3417,20 +3536,20 @@
         \if\relax\NAT@date\relax\else\NAT@@close\fi
         \if*#2*\else\textsuperscript{#2}\fi
       \fi}{#1}{#2}}
-  \renewcommand\bibsection{\thu@chapter*{\bibname}}
+  \renewcommand\bibsection{\thu@bib@heading{\bibname}}
   \newcommand\thu@set@bibliography@format{%
     \renewcommand\bibfont{\fontsize{10.5bp}{16bp}\selectfont}%
     \setlength{\bibsep}{3bp \@plus 3bp \@minus 3bp}%
     \ifthu@degree@bachelor
       \ifthu@main@language@chinese
-        \setlength{\bibhang}{1cm}%
+        \setlength{\bibhang}{21bp}%  2em
       \else
         \renewcommand\bibfont{\fontsize{10.5bp}{17bp}\selectfont}%
         \setlength{\bibsep}{6bp \@plus 3bp \@minus 3bp}%
         \setlength{\bibhang}{0.5in}%
       \fi
     \else
-      \setlength{\bibhang}{1cm}%
+      \setlength{\bibhang}{21bp}%  2em
     \fi
   }
   \thu@set@bibliography@format
@@ -3452,11 +3571,10 @@
     % \settowidth\labelwidth{\@biblabel{#1}}%
     % \setlength{\leftmargin}{\labelwidth}%
     % \addtolength{\leftmargin}{\labelsep}%
-    \setlength{\leftmargin}{1cm}%
-    \setlength{\itemindent}{\z@}%
-    \setlength{\labelsep}{0.1cm}%
-    \setlength{\labelwidth}{0.9cm}%
-    \setlength{\itemsep}{\bibsep}
+    \setlength{\labelwidth}{1cm}%
+    \setlength{\leftmargin}{\labelwidth}%
+    \setlength{\labelsep}{\z@}%
+    \setlength{\itemsep}{\bibsep}%
     \setlength{\parsep}{\z@}%
     \ifNAT@openbib
       \addtolength{\leftmargin}{\bibindent}%
@@ -3474,21 +3592,22 @@
     \ifthenelse{\equal{\blx@bbxfile}{mla-new}}{\def\bibname{WORKS CITED}}{}
   }
   \DeclareRobustCommand\inlinecite{\parencite}
-  \defbibheading{bibliography}[\bibname]{\thu@chapter*{\bibname}}
+  \defbibheading{bibliography}[\bibname]{\thu@bib@heading{#1}}
   \newcommand\thu@set@bibliography@format{%
     \renewcommand\bibfont{\fontsize{10.5bp}{16bp}\selectfont}%
     \setlength{\bibitemsep}{3bp \@plus 3bp \@minus 3bp}%
+    % 在 .bbx 中设置 \labelwidth 为 1 cm，\labelsep 为 0 pt。
+    \setlength{\biblabelsep}{0pt}%
     \ifthu@degree@bachelor
       \ifthu@main@language@chinese
-        \setlength{\bibhang}{1cm}%
+        \setlength{\bibhang}{21bp}%  2em
       \else
         \renewcommand\bibfont{\fontsize{10.5bp}{17bp}\selectfont}%
         \setlength{\bibitemsep}{6bp \@plus 3bp \@minus 3bp}%
         \setlength{\bibhang}{0.5in}%
       \fi
     \else
-      \setlength{\biblabelsep}{0.1cm}%
-      \setlength{\bibhang}{1cm}%
+      \setlength{\bibhang}{21bp}%  2em
     \fi
   }
   \thu@set@bibliography@format
@@ -3572,6 +3691,22 @@
     appendix-figure-in-lof = false,
   }%
 }
+\newcommand\thu@appendix@bib@heading[1]{%
+  \begingroup
+    \ctexset{section/numbering = false}%
+    \ifthu@degree@bachelor
+      \ctexset{section = {
+        format = \centering\fontsize{12bp}{14.4bp}\selectfont,
+        beforeskip = 66bp,
+        afterskip = 4bp,
+      }}%
+    \fi
+    \section{#1}%
+  \endgroup
+}
+\g@addto@macro\appendix{%
+  \let\thu@bib@heading\thu@appendix@bib@heading
+}
 \newcommand\thu@end@appendix@ref@section{}
 \AtBeginOfPackageFile*{bibunits}{
   \def\bibliography#1{%
@@ -3619,15 +3754,10 @@
   \g@addto@macro\appendix{%
     \renewcommand\@bibunitname{\jobname-appendix-\@alph\c@chapter}%
     \bibliographyunit[\chapter]%
-    \renewcommand\bibsection{%
-      \ctexset{section/numbering = false}%
-      \section{\bibname}%
-      \ctexset{section/numbering = true}%
-    }%
-    \ifthu@degree@graduate
+    \renewcommand\@extra@binfo{@-\@alph\c@chapter}%
+    \renewcommand\@extra@b@citeb{@-\@alph\c@chapter}%
+    \ifthu@degree@bachelor\else
       \renewcommand\citenumfont{\@Alph\c@chapter.}%
-      \renewcommand\@extra@binfo{@-\@alph\c@chapter}%
-      \renewcommand\@extra@b@citeb{@-\@alph\c@chapter}%
       \renewcommand\bibnumfmt[1]{[\@Alph\c@chapter.#1]\hfill}%
     \fi
   }
@@ -3635,58 +3765,28 @@
     \bibliographyunit\relax
   }
   \AtEndDocument{\thu@end@appendix@ref@section}
-  \renewcommand\thu@set@survey@bibheading{%
-    \renewcommand\bibsection{%
-      \begingroup
-        \ctexset{
-          section = {
-            numbering = false,
-            format = \centering\normalsize,
-            beforeskip = 20pt,
-            afterskip = 4pt,
-          },
-        }%
-        \section{\bibname}%
-      \endgroup
-    }
-  }%
   % \let\@xtestdef\@gobbletwo  % This doesn't work
   \def\bibunits@rerun@warning{\relax}
 }
-\PassOptionsToPackage{defernumbers = true}{biblatex}
+\PassOptionsToPackage{defernumbers=true}{biblatex}
 \AtEndOfPackageFile*{biblatex}{
-  \DeclareRefcontext{appendix}{}
+  \DeclareRefcontext{appendix}{labelprefix=\@Alph\c@chapter.}
   \g@addto@macro\appendix{%
-    \pretocmd\chapter{%
+    % 参考 biblatex 的 refsection=chapter 选项实现方式，
+    % 在 \@makechapterhead 和 \@makeschapterhead 进行 patch
+    \pretocmd\@makechapterhead{%
       \newrefsection
       \ifthu@degree@bachelor\else
-        \@tempcnta=\c@chapter
-        \advance\@tempcnta\@ne
-        \newrefcontext[labelprefix = {\@Alph\@tempcnta.}]{appendix}%
+        \newrefcontext{appendix}%
       \fi
-    }{}{\thu@patch@error{\chapter}}%
-    \defbibheading{bibliography}[\bibname]{%
-      \ctexset{section/numbering = false}%
-      \section{#1}%
-      \ctexset{section/numbering = true}%
-    }%
+    }{}{\thu@patch@error{\@makechapterhead}}%
+    \pretocmd\@makeschapterhead{%
+      \newrefsection
+      \ifthu@degree@bachelor\else
+        \newrefcontext{appendix}%
+      \fi
+    }{}{\thu@patch@error{\@makeschapterhead}}%
   }
-  \renewcommand\thu@set@survey@bibheading{%
-    \defbibheading{bibliography}[\bibname]{%
-      \vspace{20bp}%
-      \begingroup
-        \ctexset{
-          section = {
-            numbering = false,
-            format = \centering\normalsize,
-            beforeskip = 0pt,
-            afterskip = 0pt,
-          },
-        }%
-        \section{\bibname}%
-      \endgroup
-    }%
-  }%
   \def\bibliographystyle#1{%
     \thu@warning{'bibliographystyle' invalid for 'biblatex'.}%
   }
@@ -3701,31 +3801,23 @@
   }
 }
 \newenvironment{survey}{%
+  \thu@deprecate{"survey" environment}{}%
   \chapter{外文资料的调研阅读报告}%
   \thusetup{language = english}%
-  \let\title\thu@appendix@title
-  \let\maketitle\thu@appendix@maketitle
-  \thu@set@partial@toc@format
-  \renewcommand\tableofcontents{%
-    \section*{Contents}%
-    \thu@pdfbookmark{1}{Contents}%
-    \thu@print@contents{survey}{l}{1}{2}{}%
-    \vskip 20bp%
-  }%
-  \let\appendix\thu@appendix@appendix
-  \thu@set@survey@bibheading
+  \let\title\@gobble
+  \let\maketitle\relax
+  \let\tableofcontents\relax
+  \let\appendix\relax
   \renewcommand\bibname{参考文献}%
-  \startcontents[survey]%
 }{%
-  \stopcontents[survey]%
   \thu@reset@main@language % restore language
 }
-\newcommand\thu@set@appendix@bib@heading{}
 \newenvironment{translation}{%
+  \thu@deprecate{"translation" environment}{}%
   \chapter{外文资料的书面翻译}%
   \thusetup{language = chinese}%
-  \let\title\thu@appendix@title
-  \let\maketitle\thu@appendix@maketitle
+  \let\title\@gobble
+  \let\maketitle\relax
   \renewenvironment{abstract}{%
     \ctexset{
       section = {
@@ -3740,72 +3832,14 @@
       \textbf{关键词：}\thu@clist@use{\thu@keywords}{；}\par
     \fi
   }%
-  \thu@set@partial@toc@format
-  \renewcommand\tableofcontents{%
-    \section*{目录}%
-    \thu@pdfbookmark{1}{目录}%
-    \thu@print@contents{translation}{l}{1}{2}{}%
-    \vskip 20bp%
-  }%
-  \let\appendix\thu@appendix@appendix
-  \thu@set@survey@bibheading
-  \startcontents[translation]%
+  \let\tableofcontents\relax
+  \let\appendix\relax
 }{%
-  \stopcontents[translation]%
   \thu@reset@main@language % restore language
 }
-\newenvironment{translation-index}{}{}
-\AtEndOfPackageFile*{bibunits}{
-  \newcounter{thu@translation@index}%
-  \renewenvironment{translation-index}{%
-    \global\advance\c@thu@translation@index\@ne
-    \begin{bibunit}%
-      \renewcommand\@bibunitname{\jobname-index-\arabic{thu@translation@index}}%
-      \renewcommand\bibname{书面翻译对应的原文索引}%
-      \thu@set@survey@bibheading
-  }{%
-    \end{bibunit}%
-  }
-}
-\AtEndOfPackageFile*{biblatex}{
-  \renewenvironment{translation-index}{%
-    \endrefsection
-    \begin{refsection}%
-      \renewcommand\bibname{书面翻译对应的原文索引}%
-      \thu@set@survey@bibheading
-  }{%
-    \end{refsection}%
-  }
-}
-\DeclareRobustCommand\thu@appendix@title[1]{\gdef\thu@appendix@@title{#1}}
-\newcommand\thu@appendix@maketitle{%
-  \par
-  \begin{center}%
-    \xiaosi[1.667]\thu@appendix@@title
-  \end{center}%
-  \par
-}
-\newcommand\thu@set@partial@toc@format{%
-  \titlecontents{section}
-    [\z@]{}
-    {\contentspush{\thecontentslabel\quad}}{}
-    {\thu@leaders\thecontentspage}%
-  \titlecontents{subsection}
-    [1em]{}
-    {\contentspush{\thecontentslabel\quad}}{}
-    {\thu@leaders\thecontentspage}%
-  \titlecontents{subsubsection}
-    [2em]{}
-    {\contentspush{\thecontentslabel\quad}}{}
-    {\thu@leaders\thecontentspage}%
-}
-\newcommand\thu@appendix@appendix{%
-  \def\theHsection{\Hy@AlphNoErr{section}}%
-  \setcounter{section}{0}%
-  \setcounter{subsection}{0}%
-  \renewcommand\thesection{\thechapter.\@Alph\c@section}%
-}%
-\newcommand\thu@set@survey@bibheading{}
+\NewEnviron{translation-index}{%
+  \thu@deprecate{"translation-index" environment}{}%
+}{}
 \newenvironment{resume}{%
   \@mainmatterfalse
   \thu@end@appendix@ref@section
@@ -3935,6 +3969,7 @@
     \thu@pdfbookmark{0}{综合论文训练记录表}%
     \includepdf[pages=-]{\thu@record@file}%
   \fi
+  \thu@replace@with@error{record}
 }
 \PassOptionsToPackage{
   linktoc            = all,
@@ -3983,14 +4018,14 @@
       \hypersetup{
         pdftitle    = \thu@title,
         pdfauthor   = \thu@author,
-        pdfsubject  = \thu@degree@category,
+        pdfsubject  = \thu@discipline,
         pdfkeywords = \thu@keywords,
       }%
     \else
       \hypersetup{
         pdftitle    = \thu@title@en,
         pdfauthor   = \thu@author@en,
-        pdfsubject  = \thu@degree@category@en,
+        pdfsubject  = \thu@discipline@en,
         pdfkeywords = \thu@keywords@en,
       }%
     \fi
@@ -4003,7 +4038,24 @@
     \let\underbrace\LaTeXunderbrace
     \let\overbrace\LaTeXoverbrace
   }{}
+  \expandafter\def\csname MT_extended_eqref:n\endcsname#1{%
+    \ifthu@language@chinese
+      \ifthu@eqn@paren@style@full
+        \unskip
+      \fi
+    \fi
+    \protected@write\@auxout{}
+      {\string\MT@newlabel{#1}}%
+    \textup{\let\df@label\@empty\csname MT_prev_tagform:n\endcsname{\ref{#1}}}%
+    \ifthu@language@chinese
+      \ifthu@eqn@paren@style@full
+        \ignorespaces
+      \fi
+    \fi
+  }
+  \expandafter\MakeRobust\csname MT_extended_eqref:n\endcsname
 }
+\PassOptionsToPackage{notocbasic}{nomencl}
 \AtEndOfPackageFile*{nomencl}{
   \let\nomname\thu@denotation@name
   \def\thenomenclature{\begin{denotation}[\nom@tempdim]}
